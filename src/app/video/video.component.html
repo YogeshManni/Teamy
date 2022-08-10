@@ -1,0 +1,66 @@
+<div class="videoContainer">
+  <video class="friendVideo" #friendVideoPlayer autoPlay controls></video>
+  <video
+    *ngIf="!isMobile"
+    class="selfVideo"
+    #selfVideoPlayer
+    autoPlay
+    controls
+  ></video>
+
+  <nz-modal
+    [(nzVisible)]="isVisible"
+    nzTitle=" "
+    (nzOnCancel)="handleCancel()"
+    nzFooter=" "
+  >
+    <ng-container *nzModalContent>
+      <div *ngIf="isCalling">
+        <h3>Calling {{ friendName }} ...</h3>
+        <div style="margin-left: 50%">
+          <button
+            nz-button
+            nzType="primary"
+            class="acceptButtons"
+            nzDanger
+            (click)="rejectCall()"
+          >
+            <i nz-icon nzType="phone" nzTheme="outline"></i>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="!isCalling">
+        <h4>Accept call from {{ friendName }} ...</h4>
+        <div style="margin-left: 40%">
+          <button
+            nz-button
+            nzType="primary"
+            class="acceptButtons"
+            style="background-color: green"
+            (click)="acceptCall()"
+          >
+            <i nz-icon nzType="phone" nzTheme="outline"></i>
+          </button>
+          <button
+            nz-button
+            nzType="primary"
+            class="acceptButtons"
+            nzDanger
+            (click)="rejectCall()"
+          >
+            <i nz-icon nzType="phone" nzTheme="outline"></i>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </nz-modal>
+  <button
+    *ngIf="inCall"
+    class="endButton"
+    nz-button
+    nzType="primary"
+    (click)="rejectCall()"
+  >
+    <i nz-icon nzType="phone" nzTheme="outline"></i>
+  </button>
+</div>

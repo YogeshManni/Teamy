@@ -1,0 +1,41 @@
+.friendVideo {
+  height: 100%;
+  width: 100%;
+}
+@media screen and (max-width: 600px) {
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .videoContainer {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.selfVideo {
+  height: 30%;
+  width: 18%;
+  position: absolute;
+  right: 0;
+}
+.acceptButtons {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  margin-left: 5px;
+  margin-bottom: -20px;
+}
+.endButton {
+  width: 100px;
+  height: 50px;
+  border-radius: 8px;
+  margin: auto;
+  bottom: 0;
+  background-color: red;
+  position: absolute;
+  left: 50%;
+  margin-bottom: 10px;
+}
