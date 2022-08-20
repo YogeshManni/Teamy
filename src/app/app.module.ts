@@ -19,6 +19,8 @@ import { VideoComponent } from './video/video.component';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { RandomNumberPipe } from './random-number.pipe';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzMessageModule } from 'ng-zorro-antd/message';
 registerLocaleData(en);
 
 @NgModule({
@@ -36,6 +38,8 @@ registerLocaleData(en);
     NzDividerModule,
     NzAvatarModule,
     NzModalModule,
+    NzInputModule,
+    NzMessageModule,
   ],
   providers: [{ provide: NZ_I18N, useValue: en_US }],
   bootstrap: [AppComponent],

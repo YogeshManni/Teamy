@@ -16,7 +16,7 @@ nz-content {
 
 .inner-content {
   display: block;
-  background: #fff;
+  background-color: black;
   height: 92.5vh;
   overflow: hidden;
 }

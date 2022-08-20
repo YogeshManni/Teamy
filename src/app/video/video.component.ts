@@ -11,6 +11,7 @@ import {
 import { io } from 'socket.io-client';
 import Peer from 'simple-peer';
 import { TeamyserviceService } from '../teamyservice.service';
+import { windowWhen } from 'rxjs';
 
 @Component({
   selector: 'app-video',
@@ -56,7 +57,6 @@ export class VideoComponent implements OnInit {
   }
 
   handleCancel(): void {
-    console.log('Button cancel clicked!');
     this.isVisible = false;
   }
   playVideo() {
@@ -75,11 +75,18 @@ export class VideoComponent implements OnInit {
       });
   }
 
+  resetDimensions() {
+    let vd = document.getElementsByClassName('friendVideo')[0];
+    vd.setAttribute('height', String(window.outerHeight));
+    vd.setAttribute('width', String(window.outerWidth));
+  }
   ngOnInit(): void {
     this.isMobile = window.innerWidth < 600 ? true : false;
+    this.resetDimensions();
+
     this.userName = this._service.getUsername();
-    //'http://localhost:5000/' //
-    this.socket = io('https://gotteams-backend.herokuapp.com/', {
+    // // 'http://localhost:5000/'
+    this.socket = io('https://teamy123.herokuapp.com/', {
       transports: ['websocket'],
     });
 
@@ -103,6 +110,7 @@ export class VideoComponent implements OnInit {
     this.socket.on('callRejected', (data) => {
       this.friendVideoPlayer.nativeElement.srcObject = null;
       this.inCall = false;
+      this.resetDimensions();
       this.isVisible = false;
       this.peer.destroy();
     });
@@ -118,11 +126,23 @@ export class VideoComponent implements OnInit {
       this.callerData = data.from;
       this.callerSignal = data.signal;
       this.isCalling = false;
+      this.setVideoDimensions(data.callerHeight, data.callerWidth);
+
       this.isVisible = true;
     });
     this.socket.on('error', (res) => {
       console.log(res);
     });
+  }
+
+  setVideoDimensions(friendsHeight, friendsWidth) {
+    console.log(friendsHeight, friendsWidth);
+    let selfHeight = window.innerHeight;
+    let selfWidth = window.innerWidth;
+    if (selfHeight < friendsHeight) friendsHeight = selfHeight;
+    if (selfWidth < friendsWidth) friendsWidth = selfWidth;
+    this.friendVideoPlayer.nativeElement.width = friendsWidth;
+    this.friendVideoPlayer.nativeElement.height = friendsHeight;
   }
 
   callPeer(id) {
@@ -142,6 +162,8 @@ export class VideoComponent implements OnInit {
         from: this.selfId,
         friendName: this.userName,
         callerName: this.userName,
+        selfWidth: window.innerWidth,
+        selfHeight: window.innerHeight,
       });
     });
 
@@ -151,10 +173,12 @@ export class VideoComponent implements OnInit {
       }
     });
 
-    this.socket.on('callAcceptedUser', (signal) => {
+    this.socket.on('callAcceptedUser', (signal, width, height) => {
       this.inCall = true;
       this.isVisible = false;
       this.callAccepted = true;
+      this.setVideoDimensions(height, width);
+
       this.peer.signal(signal);
     });
   }
@@ -162,7 +186,7 @@ export class VideoComponent implements OnInit {
   rejectCall() {
     this.isVisible = false;
     this.inCall = false;
-
+    this.resetDimensions();
     if (this.friendVideoPlayer)
       this.friendVideoPlayer.nativeElement.srcObject = null;
 
@@ -190,6 +214,8 @@ export class VideoComponent implements OnInit {
         to: this.callerData,
         friendName: this.userName,
         acceptorName: this.userName,
+        selfWidth: window.innerWidth,
+        selfHeight: window.innerHeight,
       });
     });
 
@@ -202,8 +228,8 @@ export class VideoComponent implements OnInit {
     this.peer.signal(this.callerSignal);
   }
 
-  @HostListener('window:beforeunload', ['$event'])
+  /*  @HostListener('window:beforeunload', ['$event'])
   beforeunloadHandler(event: any) {
     // this.socket.emit('removeUser', this.userName);
-  }
+  } */
 }

@@ -1,18 +1,28 @@
 .friendVideo {
-  height: 100%;
+  /*  height: 100%;
   width: 100%;
+  position: fixed;
+  */
+  /* height: auto !important;
+  width: auto !important; */
 }
 @media screen and (max-width: 600px) {
   video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    /* width: 100%;
+    height: 100%; */
+    /*  object-fit: cover; */
   }
   .videoContainer {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    /* width: 100%;
+    height: 100%; */
+    /*    object-fit: cover; */
   }
+}
+
+.videoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .selfVideo {

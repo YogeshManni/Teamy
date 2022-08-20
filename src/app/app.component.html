@@ -1,4 +1,20 @@
 <!-- NG-ZORRO -->
+
+<nz-modal
+  [(nzVisible)]="usernameModal"
+  nzTitle="Please type in your username"
+  nzCloseIcon="null"
+  [nzFooter]="modalFooter"
+  nzClosable="false"
+>
+  <ng-container *nzModalContent>
+    <input nz-input placeholder="e.g John etc" [(ngModel)]="cUser" />
+  </ng-container>
+</nz-modal>
+
+<ng-template #modalFooter>
+  <button nz-button nzType="primary" (click)="handlePromptOk()">OK</button>
+</ng-template>
 <nz-layout>
   <nz-sider
     nzCollapsible
@@ -26,7 +42,7 @@
         Made with <i style="color: red">&#10084;</i> by Yogesh
       </h1>
     </nz-header>
-    <nz-content>
+    <nz-content *ngIf="username">
       <div class="inner-content">
         <app-video [callerUserID]="userId"></app-video>
       </div>
