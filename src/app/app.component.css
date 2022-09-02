@@ -10,8 +10,29 @@ nz-header {
   text-align: center;
 }
 
+nz-divider {
+  color: white !important;
+  font-size: 10px !important;
+  border-top-color: white !important;
+}
 nz-content {
   margin-top: 2px;
+}
+
+.login-form {
+  max-width: 300px;
+}
+
+.login-form-margin {
+  margin-bottom: 16px;
+}
+
+.login-form-forgot {
+  float: right;
+}
+
+.login-form-button {
+  width: 100%;
 }
 
 .inner-content {
@@ -36,4 +57,17 @@ nz-footer {
 
 .listClass {
   height: 50px;
+}
+
+.headerText {
+  font-family: "Brush Script MT", cursive;
+  font-weight: 900;
+  font-size: 30px;
+}
+
+@media screen and (max-width: 600px) {
+  .headerText {
+    font-weight: 700;
+    font-size: 20px;
+  }
 }

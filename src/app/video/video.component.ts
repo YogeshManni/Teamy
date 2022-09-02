@@ -12,6 +12,7 @@ import { io } from 'socket.io-client';
 import Peer from 'simple-peer';
 import { TeamyserviceService } from '../teamyservice.service';
 import { windowWhen } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-video',
@@ -42,6 +43,7 @@ export class VideoComponent implements OnInit {
   inCall: boolean = false;
   isMobile: boolean = false;
   friendId: string = '';
+  isGuest: boolean = false;
   peer: any = null;
   constructor(private _service: TeamyserviceService) {}
 
@@ -51,6 +53,7 @@ export class VideoComponent implements OnInit {
       this.isVisible = true;
       this.friendName = userData[1];
       this.friendId = userData[0];
+
       this.isCalling = true;
       this.callPeer(userData[0]);
     }
@@ -63,7 +66,7 @@ export class VideoComponent implements OnInit {
     navigator.mediaDevices
       .getUserMedia({ video: true, audio: true })
       .then((stream) => {
-        console.log('stream');
+        //  console.log('stream');
         this.selfStream = stream;
         if (this.selfVideoPlayer) {
           this.selfVideoPlayer.nativeElement.srcObject = stream;
@@ -84,15 +87,18 @@ export class VideoComponent implements OnInit {
     this.isMobile = window.innerWidth < 600 ? true : false;
     this.resetDimensions();
 
-    this.userName = this._service.getUsername();
+    let user = this._service.getUsername();
+
+    this.isGuest = user.isGuest;
+    this.userName = user.username;
     // // 'http://localhost:5000/'
-    this.socket = io('https://teamy123.herokuapp.com/', {
+    this.socket = io(environment.serverUrl, {
       transports: ['websocket'],
     });
 
     this.playVideo();
 
-    this.socket.emit('userName', this.userName);
+    this.socket.emit('userName', user);
     this.socket.emit('getFriends', {
       userName: this.userName,
       from: this.selfId,
@@ -131,12 +137,11 @@ export class VideoComponent implements OnInit {
       this.isVisible = true;
     });
     this.socket.on('error', (res) => {
-      console.log(res);
+      //console.log(res);
     });
   }
 
   setVideoDimensions(friendsHeight, friendsWidth) {
-    console.log(friendsHeight, friendsWidth);
     let selfHeight = window.innerHeight;
     let selfWidth = window.innerWidth;
     if (selfHeight < friendsHeight) friendsHeight = selfHeight;
@@ -178,9 +183,40 @@ export class VideoComponent implements OnInit {
       this.isVisible = false;
       this.callAccepted = true;
       this.setVideoDimensions(height, width);
-
+      this.addFriendsToDb();
       this.peer.signal(signal);
     });
+  }
+
+  checkIfUserIsGuest(user) {
+    let users: any = Object.values(this.allUsers);
+    for (let item of users) {
+      if (item[1] == user) {
+        return item[2];
+      }
+    }
+    return true;
+  }
+  addFriendsToDb() {
+    if (
+      !this._service.friendList.includes(this.friendName) &&
+      !this.isGuest &&
+      !this.checkIfUserIsGuest(this.friendName)
+    ) {
+      this._service
+        .addFriendsToDb({
+          friendName: this.friendName,
+          selfName: this.userName,
+        })
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+          },
+          error: (err) => {
+            console.log(err);
+          },
+        });
+    }
   }
 
   rejectCall() {
@@ -199,6 +235,7 @@ export class VideoComponent implements OnInit {
   }
 
   acceptCall() {
+    this.addFriendsToDb();
     this.callAccepted = true;
     this.inCall = true;
     this.isVisible = false;
